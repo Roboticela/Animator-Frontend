@@ -5,7 +5,6 @@
  * Default input: public/favicon.svg
  */
 
-const { execSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
@@ -26,10 +25,12 @@ if (!fs.existsSync(inputPath)) {
 
 async function main() {
   let sharp;
+  let ico;
   try {
     sharp = require("sharp");
+    ico = require("sharp-ico");
   } catch {
-    console.error("Missing dependency. Run: npm install --save-dev sharp");
+    console.error("Missing dependency. Run: npm install --save-dev sharp sharp-ico");
     process.exit(1);
   }
 
@@ -45,7 +46,6 @@ async function main() {
     fs.mkdirSync(publicDir, { recursive: true });
   }
 
-  const buffers = {};
   const density = 300;
 
   for (const { size, name } of sizes) {
@@ -54,20 +54,13 @@ async function main() {
       .resize(size, size)
       .png()
       .toFile(outPath);
-    buffers[size] = fs.readFileSync(outPath);
     console.log(`   ${name} (${size}×${size})`);
   }
 
-  // favicon.ico (multi-size) using to-ico if available
-  try {
-    const toIco = require("to-ico");
-    const icoBuffer = await toIco([buffers[16], buffers[32]]);
-    fs.writeFileSync(path.join(publicDir, "favicon.ico"), icoBuffer);
-    console.log("   favicon.ico (16×16, 32×32)");
-  } catch (e) {
-    if (e.code !== "MODULE_NOT_FOUND") throw e;
-    console.log("   (Skip favicon.ico; install to-ico for .ico: npm install --save-dev to-ico)");
-  }
+  await ico.sharpsToIco([sharp(inputPath, { density })], path.join(publicDir, "favicon.ico"), {
+    sizes: [16, 32],
+  });
+  console.log("   favicon.ico (16×16, 32×32)");
 
   console.log("\n✅ Web icons generated in public/");
 }
