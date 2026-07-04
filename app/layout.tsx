@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { SITE_NAME, SITE_URL } from '@/lib/constants';
 import { HOME_SEO } from '@/lib/seo';
+import Analytics from '@/components/Analytics';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -96,6 +97,9 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
           }}
         />
+        <link rel="dns-prefetch" href="https://app.animator.roboticela.com" />
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
       </head>
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
         <a
@@ -109,6 +113,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         {children}
+        <Analytics />
       </body>
     </html>
   );

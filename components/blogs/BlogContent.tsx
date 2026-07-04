@@ -51,6 +51,61 @@ function isListBlock(block: string): boolean {
   return lines.length > 0 && lines.every((line) => line.trim().startsWith('- '));
 }
 
+function isTableBlock(block: string): boolean {
+  const lines = block.trim().split('\n');
+  return (
+    lines.length >= 2 &&
+    lines.every((line) => {
+      const trimmed = line.trim();
+      return trimmed.startsWith('|') && trimmed.endsWith('|');
+    })
+  );
+}
+
+function isTableSeparator(line: string): boolean {
+  return /^\|[\s\-:|]+\|$/.test(line.trim());
+}
+
+function renderTable(block: string, index: number): ReactNode {
+  const rows = block
+    .trim()
+    .split('\n')
+    .filter((line) => !isTableSeparator(line))
+    .map((line) => line.split('|').slice(1, -1).map((cell) => cell.trim()));
+
+  const [header, ...body] = rows;
+
+  return (
+    <div key={index} className="overflow-x-auto -mx-2 px-2">
+      <table className="w-full text-sm md:text-base border-collapse">
+        <thead>
+          <tr className="border-b border-border/60">
+            {header.map((cell, cellIndex) => (
+              <th
+                key={cellIndex}
+                className="text-left py-2 px-3 font-semibold text-foreground"
+              >
+                {parseInline(cell)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {body.map((row, rowIndex) => (
+            <tr key={rowIndex} className="border-b border-border/30">
+              {row.map((cell, cellIndex) => (
+                <td key={cellIndex} className="py-2 px-3 align-top">
+                  {parseInline(cell)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function renderBlock(block: string, index: number): ReactNode {
   const trimmed = block.trim();
 
@@ -60,6 +115,10 @@ function renderBlock(block: string, index: number): ReactNode {
         {parseInline(trimmed.slice(4))}
       </h3>
     );
+  }
+
+  if (isTableBlock(trimmed)) {
+    return renderTable(trimmed, index);
   }
 
   if (isListBlock(trimmed)) {
