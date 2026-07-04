@@ -1,26 +1,27 @@
-"use client";
+import type { Metadata } from 'next';
+import HomePage from '@/components/HomePage';
+import { HOME_SEO } from '@/lib/seo';
+import { SITE_URL } from '@/lib/constants';
 
-import { useState } from "react";
+export const metadata: Metadata = {
+  title: HOME_SEO.title,
+  description: HOME_SEO.description,
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: HOME_SEO.title.absolute,
+    description: HOME_SEO.description,
+    url: SITE_URL,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: HOME_SEO.title.absolute,
+    description: HOME_SEO.description,
+  },
+};
 
-export default function Home() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <div className="root">
-      <img
-        src="/favicon.svg"
-        alt="Roboticela DevKit"
-        className="app-logo"
-      />
-      <h1>Roboticela DevKit</h1>
-      <div className="card">
-        <button type="button" onClick={() => setCount((c) => c + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>app/page.tsx</code> and save to test HMR
-        </p>
-      </div>
-    </div>
-  );
+export default function Page() {
+  return <HomePage />;
 }
