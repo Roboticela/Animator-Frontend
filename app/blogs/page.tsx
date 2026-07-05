@@ -20,6 +20,9 @@ export async function generateMetadata({ searchParams }: BlogsPageProps): Promis
     description: BLOG_INDEX_SEO.description,
     alternates: {
       canonical: '/blogs',
+      types: {
+        'application/rss+xml': '/feed.xml',
+      },
     },
     robots: isFiltered
       ? { index: false, follow: true }

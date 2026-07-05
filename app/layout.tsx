@@ -68,6 +68,11 @@ export const metadata: Metadata = {
     images: ['/apple-touch-icon.png'],
   },
   category: 'technology',
+  alternates: {
+    types: {
+      'application/rss+xml': `${SITE_URL}/feed.xml`,
+    },
+  },
 };
 
 export default function RootLayout({
